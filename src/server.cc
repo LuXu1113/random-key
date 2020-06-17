@@ -5,6 +5,7 @@
 #include <arpa/inet.h>     // inet_ntoa
 #include <sys/socket.h>    // socket
 #include <netinet/in.h>    // sockaddr_in
+#include <netinet/tcp.h>   // TCP_NODELAY
 #include <glog/logging.h>
 #include <vector>
 #include <string>
@@ -113,6 +114,8 @@ int Server::start(const int port, const struct ServerOptions& options) {
               // setsockopt(remote_socket_fd, SOL_SOCKET, SO_SNDBUF, (void*)&sendbuflen, len2);
               // getsockopt(remote_socket_fd, SOL_SOCKET, SO_SNDBUF, (void*)&sendbuflen, &len2);
               // LOG(INFO) << "now, sendbuf: " << sendbuflen;
+              const char flag = 1;
+              setsockopt(remote_socket_fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(char));
 
               if (send(remote_socket_fd, encode_str.c_str(), encode_str.length(), 0) < 0) {
                 LOG(ERROR) << "fail to send response to " << inet_ntoa(remote_addr.sin_addr) << ".";
