@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-key-deployment
+  labels:
+    app: random-key
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: random-key
+  template:
+    metadata:
+      labels:
+        app: random-key
+    spec:
+      containers:
+        name: random-key-container
+        image: random-key-image:1.0.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          limites:
+            memory: "500Mi"
+            cpu: "16"
+          requests:
+            memory: "900Mi"
+            cpu: "1"
+        ports:
+          containerPort: 1234
+        readinessProbe:
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          tcpSocket:
+          port: 1234
+        livenessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          tcpSocket:
+          port: 1234
+        startupProbe:
+          failureThreshold: 30
+          periodSeconds: 10
+          tcpSocket:
+          port: 1234
