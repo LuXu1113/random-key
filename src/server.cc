@@ -68,7 +68,7 @@ int Server::start(const int port, const struct ServerOptions& options) {
       } else {
         LOG(INFO) << "accept request from " << inet_ntoa(remote_addr.sin_addr) << ".";
 
-        thread_pool_->add_job([remote_socket_fd, remote_addr] {
+        thread_pool_->add_job([] (int remote_socket_fd, struct sockaddr_in remote_addr) {
           char *buf = (char *)malloc(BUFSIZ + 1);
           int len = recv(remote_socket_fd, buf, BUFSIZ, 0);
           if (len > 0) {
@@ -122,7 +122,7 @@ int Server::start(const int port, const struct ServerOptions& options) {
 
           free(buf);
           close(remote_socket_fd);
-        });
+        }, remote_socket_fd, remote_addr);
       }
     }
   } while (0);
